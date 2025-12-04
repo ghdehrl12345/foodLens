@@ -44,6 +44,7 @@ app.add_middleware(
 # Load model once at startup
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 MODEL = load_model()
+MODEL_PATH = os.getenv("MODEL_PATH", "best_food_model4.pth")
 
 transform = transforms.Compose(
     [
@@ -75,7 +76,10 @@ def predict_class(image: Image.Image):
 @app.post("/analyze")
 async def analyze(file: UploadFile = File(...)):
     if MODEL is None:
-        raise HTTPException(status_code=500, detail="모델 로드에 실패했습니다.")
+        raise HTTPException(
+            status_code=500,
+            detail=f"모델 로드에 실패했습니다. MODEL_PATH={MODEL_PATH}",
+        )
 
     contents = await file.read()
     try:

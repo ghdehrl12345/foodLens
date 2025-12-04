@@ -7,8 +7,9 @@ import os
 
 # ==========================================
 API_KEY = "jrxPLH7KQ+YT7n6TUeHUcA==3xBIPi7KqssoqPBF"
-MODEL_PATH = "best_food_model3.pth"  # 모델 파일 이름
-IMAGE_PATH = "C:\TempProjects\swai\TestImages\chicken2.jpeg"     
+# 환경변수로 교체 가능 (기본: best_food_model4.pth)
+MODEL_PATH = os.getenv("MODEL_PATH", "best_food_model4.pth")
+IMAGE_PATH = os.getenv("IMAGE_PATH", r"C:\TempProjects\swai\TestImages\chicken2.jpeg")
 # ==========================================
 
 #학습할 때 ImageFolder는 폴더명을 '알파벳 순서'로 정렬하여 클래스를 매핑함
@@ -42,9 +43,9 @@ def load_model():
     # map_location='cpu'가 핵심! GPU에서 학습한 걸 CPU로 불러올 때 필수입니다.
     try:
         model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
-        print("모델 로딩 성공")
+        print(f"모델 로딩 성공: {MODEL_PATH}")
     except FileNotFoundError:
-        print(f"로딩 실패")
+        print(f"로딩 실패: {MODEL_PATH}")
         return None
     
     model = model.to(device)
