@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
 import { Upload as UploadIcon, Camera, Loader2, Plus, Check } from 'lucide-react';
-import { analyzeImageWithCustomModel } from '../services/customModelClient';
+import { analyzeImageWithCustomModel, getApiBase } from '../services/customModelClient';
+import { analyzeImageInBrowser } from '../services/browserModelClient';
 import { FoodItem, Meal } from '../types';
 import { useNavigate } from 'react-router-dom';
 
@@ -33,12 +34,26 @@ const Upload: React.FC = () => {
 
     setIsAnalyzing(true);
     try {
-      const result = await analyzeImageWithCustomModel(selectedFile);
-      // 백엔드가 FoodItem 형태로 반환한다고 가정
+      const apiBase = getApiBase();
+      let result: FoodItem[] | null = null;
+
+      if (apiBase) {
+        try {
+          result = await analyzeImageWithCustomModel(selectedFile);
+        } catch (err) {
+          console.error('API 분석 실패, 로컬 모델로 대체합니다.', err);
+        }
+      }
+
+      // API가 없거나 실패하면 브라우저 내 mock 모델 사용
+      if (!result) {
+        result = await analyzeImageInBrowser(selectedFile);
+      }
+
       setAnalysisResult(result);
     } catch (error) {
       console.error('Analysis failed', error);
-      alert('분석에 실패했어요. 모델 서버가 켜져 있는지 확인해 주세요.');
+      alert('분석에 실패했어요. 다시 시도해 주세요.');
     } finally {
       setIsAnalyzing(false);
     }
