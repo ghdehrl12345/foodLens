@@ -1,0 +1,7 @@
+{
+  "name": "푸드렌즈 - 사진 한 장 칼로리 트래커",
+  "description": "한국식 식단도 사진만으로 칼로리를 계산해 주는 맞춤형 식단 관리 앱",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
